@@ -34,7 +34,7 @@ var started = false;
 
 var interval,animationinterval,gameoverinterval;
 
-var sounds = ['yumyum','thatswhatimtalkingabout','juicy'];
+var sounds = ['yumyum','thatswhatimtalkingabout','juicy', 'imjustimpressed'];
 
 var rsound = 0;
 var rsound_old = 0;
@@ -141,7 +141,7 @@ function play(){
     scored=true;
     score++;
     while(retry){
-      rsound = Math.floor(Math.random()*3);
+      rsound = Math.floor(Math.random()*4);
       if((rsound==rsound_old)||(rsound==rsound_old2)){retry=true;}
       else{retry=false;}
     }

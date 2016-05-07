@@ -9,7 +9,7 @@ var h = $(window).height();
 var w = $(window).width();
 
 canvas.width = w - (w/48);
-canvas.height = h - (h/48);
+canvas.height = canvas.width/1.7777;
 
 var y = canvas.height/2,momentum = -5;
 var x = canvas.width/4;
@@ -46,15 +46,17 @@ var pink = false;
 
 var highscore;
 
+var cookieE = navigator.cookieEnabled;
+
 function jump(){
-  momentum = 20;
+  momentum = canvas.width/96;
 }
 
 function play(){
   started = true;
   
-  if(momentum==-21){
-    momentum = -20;
+  if(momentum==-1*(canvas.width/96)){
+    momentum = -19;
   }
   
   if(y>canvas.height){
@@ -67,7 +69,7 @@ function play(){
   }
     
   y-=momentum;
-  momentum-=2;
+  momentum-=canvas.width/960;
   
   canvas.height = canvas.height;
   
@@ -171,10 +173,6 @@ function loadscreen(s){
     context.fillStyle = '#6699ff';
     context.rect(0,0,canvas.width,canvas.height);
     context.fill();
-
-    context.beginPath(); /*Jack*/
-    context.drawImage(document.getElementById('jf' + frame.toString()), x, y-((canvas.width/16)*2.185)/2, canvas.width/16, (canvas.width/16)*2.185 /*2.185 is the magic scaling unit. makes sure the image doesnt stretch*/);
-    context.fill();
   
     context.beginPath();
     context.fillStyle = '#ccc';
@@ -190,28 +188,38 @@ function loadscreen(s){
     context.lineWidth = 3;
     context.strokeText('Press any key to start. Click to jump',canvas.width*0.5,canvas.height*0.8375);
     
-    context.beginPath();
-    context.fillStyle = '#fff'
-    context.font = 'bold ' + canvas.height/12 + 'px Comic Sans MS, cursive, sans-serif';
-    context.textAlign = 'right';
-    context.fillText('highscore:',canvas.width-canvas.width/8,0+canvas.height/12);
-    context.fillStyle = 'black';
-    context.lineWidth = 2;
-    context.strokeText('highscore:',canvas.width-canvas.width/8,0+canvas.height/12);
-    
     checkCookie('highscore');
     
-    context.beginPath(); /*Highscore background*/
-    context.fillStyle = 'black';
-    context.rect(canvas.width-canvas.width/8,0,canvas.width/8,canvas.width/12);
-    context.fill();
+    if(cookieE){
+      context.beginPath(); /*Highscore background*/
+      context.fillStyle = 'black';
+      context.rect(canvas.width-canvas.width/8,0,canvas.width/8,canvas.width/12);
+      context.fill();
   
-    context.beginPath(); /*Highscore text*/
-    context.fillStyle = 'white';
-    context.font = canvas.width/12 + 'px Comic Sans MS, cursive, sans-serif';
-    context.textAlign = 'start';
-    context.fillText(highscore,canvas.width-canvas.width/8,canvas.width/14);
-    context.fill();
+      context.beginPath(); /*Highscore text*/
+      context.fillStyle = 'white';
+      context.font = canvas.width/12 + 'px Comic Sans MS, cursive, sans-serif';
+      context.textAlign = 'start';
+      context.fillText(highscore,canvas.width-canvas.width/8,canvas.width/14);
+      context.fill();
+      
+      context.beginPath();
+      context.fillStyle = '#fff'
+      context.font = 'bold ' + canvas.height/12 + 'px Comic Sans MS, cursive, sans-serif';
+      context.textAlign = 'right';
+      context.fillText('highscore:',canvas.width-canvas.width/8,0+canvas.height/12);
+      context.fillStyle = 'black';
+      context.lineWidth = 2;
+      context.strokeText('highscore:',canvas.width-canvas.width/8,0+canvas.height/12);
+    
+    }else{
+      context.beginPath(); /*Cookies not enabled*/
+      context.fillStyle = 'white';
+      context.font = canvas.width/24 + 'px sans-serif';
+      context.textAlign = 'center';
+      context.fillText('No highscore available, cookies turned off',canvas.width/2,canvas.height/2);
+      context.fill();
+    }
     
   }else if(s==1){
     
@@ -318,6 +326,7 @@ function reset(){
   started = false;
   animationinterval = window.setInterval(animation,50);
   clearInterval(gameoverinterval);
+  
 } 
 
 function animation(){
@@ -355,6 +364,10 @@ function keymanage(e){
     interval = window.setInterval(play,50);
   }
   else if(gameover){
+    context.beginPath();
+    context.fillStyle = '#6699ff';
+    context.rect(0,0,canvas.width,canvas.height);
+    context.fill();
     loadscreen(0);
     reset();
   }
@@ -397,17 +410,5 @@ function checkCookie(n){
   }
 }
 
-function cookieNotice(){
-  var notice = getCookie('notice');
-  if(notice=='true'){
-    console.log('cookie appears to be opened');
-  }
-  else{
-    console.log('attempting to deliver "important" message... god damn european regulations');
-    changeCookie('notice','true',0.014);
-    alert('Important notice: this website uses cookies to enhance your experience. Where? You see that counter in the top corner before you start your game? That is your highscore from the past year and is stored in a cookie. A cookie is a little file on your computer that stores data about you. You can turn them off in your browser settings.');
-  }
-}
-
-document.onload = loadscreen(0),animationinterval = window.setInterval(animation,50),cookieNotice();
+document.onload = loadscreen(0),animationinterval = window.setInterval(animation,50);
 document.onkeypress = keymanage;

@@ -373,6 +373,14 @@ function keymanage(e){
   }
 }
 
+function clickControl(){
+  if(gameover || !started){
+    interval = window.setInterval(play,50);
+  }else{
+    jump();
+  }
+}
+
 function changeCookie(name, value, exd){
   var d = new Date();
   d.setTime(d.getTime() + (exd*24*60*60*1000));

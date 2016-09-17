@@ -5,7 +5,7 @@ var gameover;
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
-var canvas_b = document.getElementById('canvas');
+var canvas_b = document.getElementById('background');
 var background = canvas_b.getContext('2d');
 
 var h = $(window).height();
@@ -23,6 +23,9 @@ var x = canvas.width/4;
 var x_bar = canvas.width;
 var x_bar2 = canvas.width*1.5;
 var frame = 1;
+
+var x_bg = 0;
+var x_bg2 = canvas.width;
 
 var pix = [0,0,0], pix_old = [0,0,0];
 
@@ -58,13 +61,6 @@ function jump(){
   momentum = canvas.width/96;
 }
 
-function background_scroll(){
-  bg_x = 0;
-  //bg_x2 = canvas.width;
-  background.drawImage(document.getElementById('bg'),bg_x,0,canvas.width,canvas.height);
-  //background.drawImage(document.getElementById('bg'),bg_x2,0,canvas.width,canvas.height);
-}
-
 function play(){
   started = true;
 
@@ -85,6 +81,14 @@ function play(){
   momentum-=canvas.width/960;
 
   canvas.height = canvas.height;
+
+  background.beginPath(); /*background*/
+  background.drawImage(document.getElementById('bg'),x_bg,0,canvas.width,canvas.height);
+  background.fill();
+
+  background.beginPath(); /*background*/
+  background.drawImage(document.getElementById('bg'),x_bg2,0,canvas.width,canvas.height);
+  background.fill();
 
   context.beginPath(); /*clear jack*/
   context.clearRect(x, y-((canvas.width/16)*2.185)/2, canvas.width/16, (canvas.width/16)*2.185 /*2.185 is the magic scaling unit. makes sure the image doesnt stretch*/);
@@ -147,6 +151,15 @@ function play(){
     scored=false;
   }
 
+  x_bg--;
+  if(x_bg<-canvas.width){
+    x_bg=canvas.width;
+  }
+  x_bg2--;
+  if(x_bg2<-canvas.width){
+    x_bg2=canvas.width;
+  }
+
   if((Math.min(x_bar,x_bar2)<canvas.width/4) && (!scored)){
     scored=true;
     score++;
@@ -170,7 +183,6 @@ function play(){
       changeCookie('highscore',score.toString(),365)
     }
     console.log(Number(highscore).toString() + ' ' + highscore);
-    reset();
   }
 
   t++;
@@ -366,20 +378,22 @@ function keymanage(e){
     interval = window.setInterval(play,50);
   }
   else if(gameover){
-    context.beginPath();
-    context.fillStyle = '#6699ff';
-    context.rect(0,0,canvas.width,canvas.height);
-    context.fill();
+    context.clearRect(0,0,canvas.width,canvas.height);
     loadscreen(0);
     reset();
   }
 }
 
 function clickControl(){
-  if(gameover || !started){
+  if(!started){
     interval = window.setInterval(play,50);
   }else{
     jump();
+  }
+  if(gameover){
+    context.clearRect(0,0,canvas.width,canvas.height);
+    loadscreen(0);
+    reset();
   }
 }
 
